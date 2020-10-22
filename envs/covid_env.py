@@ -1,5 +1,6 @@
 import gym
 from gym import spaces
+import covasim as cv
 
 class CustomEnv(gym.Env):
   """Custom Environment that follows gym interface"""
