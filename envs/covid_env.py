@@ -2,28 +2,44 @@ import gym
 from gym import spaces
 import covasim as cv
 
-class CustomEnv(gym.Env):
-  """Custom Environment that follows gym interface"""
-  metadata = {'render.modes': ['human']}
+N_ACTIONS = 1
+DAILY_TESTS = 100
 
-  def __init__(self, arg1, arg2, ...):
-    super(CustomEnv, self).__init__()
-    # Define action and observation space
-    # They must be gym.spaces objects
-    # Example when using discrete actions:
-    self.action_space = spaces.Discrete(N_DISCRETE_ACTIONS)
-    # Example for using image as input:
-    self.observation_space = spaces.Box(low=0, high=255, shape=
-                    (HEIGHT, WIDTH, N_CHANNELS), dtype=np.uint8)
+class CovidEnv(gym.Env):
+    """Environment that follows gym interface"""
+    metadata = {'render.modes': ['human']}
 
-  def step(self, action):
-    # Execute one time step within the environment
-    return
+    def __init__(self):
+        super(CovidEnv, self).__init__()
+        # Define action and observation space
+        # They must be gym.spaces objects
+        self.sim = self.sim = cv.Sim()
+        # Example when using discrete actions:
+        self.action_space = spaces.Continuous(N_ACTIONS)
+        # self.observation_space =
 
-  def reset(self):
-    # Reset the state of the environment to an initial state
-    return
+    def get_observations(self):
+        return
 
-  def render(self, mode='human', close=False):
-    # Render the environment to the screen
-    return
+    def step(self, action):
+        # Execute one time step within the environment
+        assert self.action_space.contains(action), f"{action} ({type(action)} invalid "
+        self.sim['interventions'] = test_num(
+            daily_tests=DAILY_TESTS,
+            symp_test=action,
+        )
+        self.sim.step()
+        reward = -self.sim.check_death()
+        done = self.sim.complete
+        info = None
+        obs = None
+        return None, reward, done, info
+
+    def reset(self):
+        # Reset the state of the environment to an initial state
+        self.sim.initialize()
+        return
+
+    def render(self, mode='human', close=False):
+        # Render the environment to the screen
+        return
