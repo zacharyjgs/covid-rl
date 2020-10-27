@@ -1,9 +1,34 @@
 import gym
 from gym import spaces
 import covasim as cv
+import numpy as np
 
 N_ACTIONS = 1
 DAILY_TESTS = 100
+
+class Feature():
+    def __init__(self, name, discrete, ob_dim=2, low=0, high=1):
+        self.name = name
+        self.discrete = discrete
+        self.ob_dim = ob_dim
+        self.low = low
+        self.high = high
+
+    def get_space(self):
+        if self.discrete:
+            return spaces.Discrete(self.ob_dim)
+        else:
+            return spaces.Box(low=self.low, high=self.high)
+
+FEATURES = {
+    Feature('age', False, low=0, high=np.inf),
+    Feature('death_prob', low=0, high=1),
+    Feature('exposed', True, ob_dim=2),
+    Feature('susceptible', True, ob_dim=2),
+    Feature('sex', True, ob_dim=2),
+    Feature('symp_prob', False, low=0, high=1),
+    Feature('tested', True, ob_dim=2),
+}
 
 class CovidEnv(gym.Env):
     """Environment that follows gym interface"""
@@ -16,10 +41,14 @@ class CovidEnv(gym.Env):
         self.sim = self.sim = cv.Sim()
         # Example when using discrete actions:
         self.action_space = spaces.Continuous(N_ACTIONS)
-        # self.observation_space =
+
+        spaces = [feature.get_space() for feature in FEATURES]
+        self.observation_space = spaces.Tuple(spaces)
 
     def get_observations(self):
-        return
+        obs = [self.sim.people[feature.name] for feature in FEATURES]
+        obs = np.asarray(obs).T
+        return obs
 
     def step(self, action):
         # Execute one time step within the environment
@@ -32,8 +61,8 @@ class CovidEnv(gym.Env):
         reward = -self.sim.check_death()
         done = self.sim.complete
         info = None
-        obs = None
-        return None, reward, done, info
+        obs = self.get_observations()
+        return obs, reward, done, info
 
     def reset(self):
         # Reset the state of the environment to an initial state
