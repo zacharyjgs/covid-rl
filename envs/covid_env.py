@@ -38,9 +38,9 @@ class CovidEnv(gym.Env):
         super(CovidEnv, self).__init__()
         # Define action and observation space
         # They must be gym.spaces objects
-        self.sim = self.sim = cv.Sim()
+        self.sim = cv.Sim()
         # Example when using discrete actions:
-        self.action_space = spaces.Continuous(N_ACTIONS)
+        self.action_space = spaces.Box(low=0, high=np.inf)
 
         spaces = [feature.get_space() for feature in FEATURES]
         self.observation_space = spaces.Tuple(spaces)
@@ -53,7 +53,7 @@ class CovidEnv(gym.Env):
     def step(self, action):
         # Execute one time step within the environment
         assert self.action_space.contains(action), f"{action} ({type(action)} invalid "
-        self.sim['interventions'] = test_num(
+        self.sim['interventions'] = cv.interventions.test_num(
             daily_tests=DAILY_TESTS,
             symp_test=action,
         )
@@ -69,6 +69,6 @@ class CovidEnv(gym.Env):
         self.sim.initialize()
         return
 
-    def render(self, mode='human', close=False):
-        # Render the environment to the screen
-        return
+    # def render(self, mode='human', close=False):
+    #     # Render the environment to the screen
+    #     return
