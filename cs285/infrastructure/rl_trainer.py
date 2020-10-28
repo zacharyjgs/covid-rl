@@ -78,14 +78,15 @@ class RL_Trainer(object):
         # Is this env continuous, or self.discrete?
         discrete = isinstance(self.env.action_space, gym.spaces.Discrete)
         # Are the observations images?
-        img = len(self.env.observation_space.shape) > 2
+        img = False
 
         self.params['agent_params']['discrete'] = discrete
 
         # Observation and action sizes
 
         ob_dim = self.env.observation_space.shape if img else self.env.observation_space.shape[0]
-        ac_dim = self.env.action_space.n if discrete else self.env.action_space.shape[0]
+        # ob_dim = len(self.env.observation_space)
+        ac_dim = self.env.observation_space.shape if img else self.env.action_space.shape[0]
         self.params['agent_params']['ac_dim'] = ac_dim
         self.params['agent_params']['ob_dim'] = ob_dim
 

@@ -34,6 +34,13 @@ def register_custom_envs():
             max_episode_steps=1000,
             reward_threshold=200,
         )
+    if 'Covid-v0' not in registry.env_specs:
+        register(
+            id='Covid-v0',
+            entry_point='cs285.envs.covid_env:CovidEnv',
+            max_episode_steps=1000, # maybe change
+            reward_threshold=0,
+        )
 
 
 def get_env_kwargs(env_name):

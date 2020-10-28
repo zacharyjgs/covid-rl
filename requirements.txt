@@ -2,3 +2,8 @@ covasim
 gym
 numpy
 torch
+tensorboard==2.3.0
+tensorboardX==1.8
+matplotlib==2.2.2
+ipdb==0.13.3
+ipython==6.4.0
